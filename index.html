@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <h1 class="header__title">Face Recognition Attendance System</h1>
+                <nav class="nav">
+                    <button class="btn btn--secondary nav-btn" data-section="dashboard">Dashboard</button>
+                    <button class="btn btn--secondary nav-btn" data-section="register">Register User</button>
+                    <button class="btn btn--secondary nav-btn" data-section="attendance">Take Attendance</button>
+                    <button class="btn btn--secondary nav-btn" data-section="records">View Records</button>
+                    <button class="btn btn--secondary nav-btn" data-section="manage">Manage Users</button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main">
+            <div class="container">
+                <!-- Dashboard Section -->
+                <section id="dashboard" class="section active">
+                    <h2>Dashboard</h2>
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Registered Users</h3>
+                                <div class="stat" id="userCount">0</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Today's Attendance</h3>
+                                <div class="stat" id="todayAttendance">0</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>Total Records</h3>
+                                <div class="stat" id="totalRecords">0</div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card__body">
+                                <h3>System Status</h3>
+                                <div class="status status--info" id="systemStatus">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Register User Section -->
+                <section id="register" class="section">
+                    <h2>Register New User</h2>
+                    <div class="register-container">
+                        <div class="card">
+                            <div class="card__body">
+                                <div class="form-group">
+                                    <label class="form-label" for="userName">Full Name</label>
+                                    <input type="text" id="userName" class="form-control" placeholder="Enter full name">
+                                </div>
+                                <div class="video-container">
+                                    <video id="registerVideo" autoplay muted></video>
+                                    <canvas id="registerCanvas"></canvas>
+                                </div>
+                                <div class="register-controls">
+                                    <button id="startRegisterCamera" class="btn btn--primary">Start Camera</button>
+                                    <button id="captureImages" class="btn btn--secondary" disabled>Capture Face Images</button>
+                                    <button id="registerUser" class="btn btn--success" disabled>Register User</button>
+                                </div>
+                                <div id="registerStatus" class="status-message"></div>
+                                <div id="registerProgress" class="progress-container">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" id="progressFill"></div>
+                                    </div>
+                                    <div class="progress-text" id="progressText">Ready to capture</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Take Attendance Section -->
+                <section id="attendance" class="section">
+                    <h2>Take Attendance</h2>
+                    <div class="attendance-container">
+                        <div class="card">
+                            <div class="card__body">
+                                <div class="video-container">
+                                    <video id="attendanceVideo" autoplay muted></video>
+                                    <canvas id="attendanceCanvas"></canvas>
+                                </div>
+                                <div class="attendance-controls">
+                                    <button id="startAttendanceCamera" class="btn btn--primary">Start Camera</button>
+                                    <button id="stopAttendanceCamera" class="btn btn--secondary" disabled>Stop Camera</button>
+                                </div>
+                                <div id="attendanceStatus" class="status-message"></div>
+                                <div class="recognition-info">
+                                    <div class="info-card">
+                                        <h4>Last Recognition</h4>
+                                        <div id="lastRecognition">None</div>
+                                    </div>
+                                    <div class="info-card">
+                                        <h4>Confidence Score</h4>
+                                        <div id="confidenceScore">-</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- View Records Section -->
+                <section id="records" class="section">
+                    <h2>Attendance Records</h2>
+                    <div class="records-container">
+                        <div class="card">
+                            <div class="card__body">
+                                <div class="records-controls">
+                                    <input type="text" id="searchRecords" class="form-control" placeholder="Search by name...">
+                                    <input type="date" id="filterDate" class="form-control">
+                                    <button id="clearFilters" class="btn btn--outline">Clear Filters</button>
+                                </div>
+                                <div class="table-container">
+                                    <table id="recordsTable" class="records-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Date</th>
+                                                <th>Time</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recordsTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="recordsEmpty" class="empty-state">
+                                    No attendance records found.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Manage Users Section -->
+                <section id="manage" class="section">
+                    <h2>Manage Users</h2>
+                    <div class="manage-container">
+                        <div class="card">
+                            <div class="card__body">
+                                <div class="table-container">
+                                    <table id="usersTable" class="users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Registration Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div id="usersEmpty" class="empty-state">
+                                    No users registered yet.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Loading face recognition models...</div>
+        </div>
+
+        <!-- Confirmation Modal -->
+        <div id="confirmModal" class="modal hidden">
+            <div class="modal-content">
+                <h3 id="confirmTitle">Confirm Action</h3>
+                <p id="confirmMessage">Are you sure you want to proceed?</p>
+                <div class="modal-actions">
+                    <button id="confirmYes" class="btn btn--primary">Yes</button>
+                    <button id="confirmNo" class="btn btn--outline">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
